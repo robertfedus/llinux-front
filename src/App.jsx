@@ -14,9 +14,7 @@ import { v4 as uuidv4 } from 'uuid'; // Added missing import
 const generateId = () => uuidv4();
 
 function App() {
-  const [messages, setMessages] = useState([
-    { role: 'assistant', content: 'Hello! How can I help you today?' }
-  ]);
+  const [messages, setMessages] = useState([]);
   const [isReasoning, setIsReasoning] = useState(false);
   const [isSearching, setIsSearching] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -41,7 +39,7 @@ function App() {
     scrollToBottom();
 
     if (token) {
-      localStorage.setItem('token', token);
+
       setShowRegister(false);
       setShowLogin(false);
     } else {
@@ -100,6 +98,7 @@ function App() {
               setAbortController={setAbortController}
               messagesEndRef={messagesEndRef}
               setCommands={setCommands}
+              halfWidth={true ? showSidebar : false}
             />
           </div>
           {showRegister && (

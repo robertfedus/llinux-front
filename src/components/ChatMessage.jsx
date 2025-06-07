@@ -1,8 +1,8 @@
 import React, { useEffect, useRef } from 'react';
 import ReactMarkdown from 'react-markdown';
 import { PrismLight as SyntaxHighlighter } from 'react-syntax-highlighter';
-import { oneLight } from 'react-syntax-highlighter/dist/esm/styles/prism';
-import { Copy } from 'lucide-react';
+import { oneDark } from 'react-syntax-highlighter/dist/esm/styles/prism';
+import { Copy, Check, User, Bot, Settings } from 'lucide-react';
 
 // Import all supported languages
 import bash from 'react-syntax-highlighter/dist/esm/languages/prism/bash';
@@ -75,7 +75,9 @@ SyntaxHighlighter.registerLanguage('yml', yaml);
 const ChatMessage = ({ message, handleAddCommandFromMessage }) => {
   const isUser = message.role === 'user';
   const isSystem = message.role === 'system';
+  const isAssistant = message.role === 'assistant';
   const processedCommands = useRef(new Set());
+  const [copiedStates, setCopiedStates] = React.useState({});
 
   // Handle command extraction from raw message content
   useEffect(() => {
@@ -98,63 +100,206 @@ const ChatMessage = ({ message, handleAddCommandFromMessage }) => {
     });
   }, [message.content, handleAddCommandFromMessage]);
 
+  const handleCopy = async (text, blockId) => {
+    try {
+      await navigator.clipboard.writeText(text);
+      setCopiedStates(prev => ({ ...prev, [blockId]: true }));
+      setTimeout(() => {
+        setCopiedStates(prev => ({ ...prev, [blockId]: false }));
+      }, 2000);
+    } catch (err) {
+      console.error('Failed to copy:', err);
+    }
+  };
+
+  const getMessageIcon = () => {
+    if (isUser) return <User size={18} className="text-purple-300" />;
+    if (isSystem) return <Settings size={18} className="text-blue-300" />;
+    return <Bot size={18} className="text-emerald-300" />;
+  };
+
+  const getMessageStyles = () => {
+    if (isUser) {
+      return 'ml-auto bg-gradient-to-br from-purple-600 to-blue-600 text-white shadow-lg border border-purple-500/30';
+    }
+    if (isSystem) {
+      return 'mx-auto bg-gradient-to-br from-blue-500/20 to-cyan-500/20 text-blue-200 border border-blue-400/30 backdrop-blur-sm';
+    }
+    return 'bg-white/10 backdrop-blur-sm text-white border border-white/20 shadow-lg';
+  };
+
   return (
-    <div
-      className={`mb-4 p-4 rounded-lg max-w-xl ${
-        isUser
-          ? 'ml-auto bg-secondary text-white'
-          : isSystem
-          ? 'mx-auto bg-accent2 text-gray-700 text-center italic text-sm'
-          : 'bg-white border border-gray-200 shadow-sm'
-      }`}
-    >
-      <ReactMarkdown
-        components={{
-          code({ node, inline, className, children, ...props }) {
-            const match = /language-(\w+)/.exec(className || '');
-            const codeString = String(children).replace(/\n$/, '').trim();
+    <div className={`mb-6 p-5 rounded-xl max-w-4xl transition-all duration-300 hover:shadow-xl ${getMessageStyles()}`}>
+      {/* Message Header */}
+      <div className="flex items-center space-x-3 mb-3">
+        <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-white/10 backdrop-blur-sm">
+          {getMessageIcon()}
+        </div>
+        <div className="flex-1">
+          <div className={`text-sm font-medium ${
+            isUser ? 'text-purple-100' : 
+            isSystem ? 'text-blue-200' : 
+            'text-white/90'
+          }`}>
+            {isUser ? 'You' : isSystem ? 'System' : 'LLinux'}
+          </div>
+          <div className={`text-xs ${
+            isUser ? 'text-purple-200/75' : 
+            isSystem ? 'text-blue-300/75' : 
+            'text-white/60'
+          }`}>
+            {new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+          </div>
+        </div>
+      </div>
 
-            if (!inline && match) {
-              return (
-                // Added mb-4 class here for vertical spacing
-                <div className="relative group mb-4 mt-4">
-                  <button
-                    onClick={() => navigator.clipboard.writeText(codeString)}
-                    className="absolute right-2 top-2 p-1 opacity-0 group-hover:opacity-100 transition-opacity hover:bg-gray-100 rounded"
-                    aria-label="Copy code"
-                  >
-                    <Copy size={16} className="text-gray-600" />
-                  </button>
-                  <SyntaxHighlighter
-                    style={oneLight}
-                    language={match[1]}
-                    PreTag="div"
-                    customStyle={{
-                      fontSize: '0.875rem',
-                      padding: '1rem',
-                      margin: 0,
-                      background: '#f8fafc',
-                      borderRadius: '0.375rem'
-                    }}
-                    codeTagProps={{ style: { fontSize: '0.875rem' } }}
-                    {...props}
-                  >
-                    {codeString}
-                  </SyntaxHighlighter>
-                </div>
-              );
-            }
-
-            return (
-              <code className={`${className} text-sm`} {...props}>
+      {/* Message Content */}
+      <div className={`prose prose-invert max-w-none ${
+        isSystem ? 'text-center italic' : ''
+      }`}>
+        <ReactMarkdown
+          components={{
+            // Paragraphs
+            p: ({ children }) => (
+              <p className={`mb-3 leading-relaxed ${
+                isUser ? 'text-white/95' : 
+                isSystem ? 'text-blue-200' : 
+                'text-white/90'
+              }`}>
                 {children}
-              </code>
-            );
-          },
-        }}
-      >
-        {message.content}
-      </ReactMarkdown>
+              </p>
+            ),
+            
+            // Headers
+            h1: ({ children }) => (
+              <h1 className="text-xl font-bold mb-3 text-white border-b border-white/20 pb-2">
+                {children}
+              </h1>
+            ),
+            h2: ({ children }) => (
+              <h2 className="text-lg font-semibold mb-2 text-white/95">
+                {children}
+              </h2>
+            ),
+            h3: ({ children }) => (
+              <h3 className="text-base font-medium mb-2 text-white/90">
+                {children}
+              </h3>
+            ),
+
+            // Lists
+            ul: ({ children }) => (
+              <ul className="list-disc list-inside mb-3 space-y-1 text-white/90">
+                {children}
+              </ul>
+            ),
+            ol: ({ children }) => (
+              <ol className="list-decimal list-inside mb-3 space-y-1 text-white/90">
+                {children}
+              </ol>
+            ),
+
+            // Links
+            a: ({ href, children }) => (
+              <a 
+                href={href} 
+                className="text-purple-300 hover:text-purple-200 underline decoration-purple-400/50 hover:decoration-purple-300 transition-colors"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                {children}
+              </a>
+            ),
+
+            // Blockquotes
+            blockquote: ({ children }) => (
+              <blockquote className="border-l-4 border-purple-400/50 pl-4 py-2 bg-white/5 rounded-r-lg mb-3 italic text-white/80">
+                {children}
+              </blockquote>
+            ),
+
+            // Code blocks and inline code
+            code({ node, inline, className, children, ...props }) {
+              const match = /language-(\w+)/.exec(className || '');
+              const codeString = String(children).replace(/\n$/, '').trim();
+              const blockId = `code-${Math.random().toString(36).substr(2, 9)}`;
+
+              if (!inline && match) {
+                return (
+                  <div className="relative group mb-4 mt-4">
+                    {/* Code block header */}
+                    <div className="flex items-center justify-between bg-slate-800/80 backdrop-blur-sm px-4 py-2 rounded-t-lg border-b border-white/10">
+                      <div className="flex items-center space-x-2">
+                        <div className="flex space-x-1">
+                          <div className="w-3 h-3 bg-red-400 rounded-full"></div>
+                          <div className="w-3 h-3 bg-yellow-400 rounded-full"></div>
+                          <div className="w-3 h-3 bg-green-400 rounded-full"></div>
+                        </div>
+                        <span className="text-sm text-white/70 font-medium">
+                          {match[1]}
+                        </span>
+                      </div>
+                      <button
+                        onClick={() => handleCopy(codeString, blockId)}
+                        className="flex items-center space-x-2 px-2 py-1 rounded-md bg-white/10 hover:bg-white/20 transition-all duration-200 text-white/70 hover:text-white text-xs"
+                        aria-label="Copy code"
+                      >
+                        {copiedStates[blockId] ? (
+                          <>
+                            <Check size={14} className="text-green-400" />
+                            <span>Copied!</span>
+                          </>
+                        ) : (
+                          <>
+                            <Copy size={14} />
+                            <span>Copy</span>
+                          </>
+                        )}
+                      </button>
+                    </div>
+                    
+                    <SyntaxHighlighter
+                      style={oneDark}
+                      language={match[1]}
+                      PreTag="div"
+                      customStyle={{
+                        fontSize: '0.875rem',
+                        padding: '1rem',
+                        margin: 0,
+                        background: 'rgb(30, 41, 59)',
+                        borderRadius: '0 0 0.5rem 0.5rem',
+                        border: '1px solid rgba(255, 255, 255, 0.1)',
+                        borderTop: 'none'
+                      }}
+                      codeTagProps={{ 
+                        style: { 
+                          fontSize: '0.875rem',
+                          fontFamily: 'Monaco, Menlo, "Ubuntu Mono", monospace'
+                        } 
+                      }}
+                      {...props}
+                    >
+                      {codeString}
+                    </SyntaxHighlighter>
+                  </div>
+                );
+              }
+
+              // Inline code
+              return (
+                <code 
+                  className="px-2 py-1 bg-white/20 backdrop-blur-sm rounded text-sm font-mono text-purple-200 border border-white/20" 
+                  {...props}
+                >
+                  {children}
+                </code>
+              );
+            },
+          }}
+        >
+          {message.content}
+        </ReactMarkdown>
+      </div>
     </div>
   );
 };

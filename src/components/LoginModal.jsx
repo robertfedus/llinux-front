@@ -1,27 +1,30 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import { X, AlertCircle, LogIn } from 'lucide-react';
 
 const LoginModal = ({ onClose, onSuccess }) => {
   const [formData, setFormData] = useState({ email: '', password: '' });
   const [errors, setErrors] = useState({});
   const [serverError, setServerError] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
   const validate = () => {
     const newErrors = {};
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
     if (!emailRegex.test(formData.email)) newErrors.email = 'Invalid email format';
     if (formData.password.length < 6) newErrors.password = 'Password must be at least 6 characters';
-
     return newErrors;
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setServerError('');
+    setIsLoading(true);
+    
     const validationErrors = validate();
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors);
+      setIsLoading(false);
       return;
     }
 
@@ -33,48 +36,92 @@ const LoginModal = ({ onClose, onSuccess }) => {
     } catch (err) {
       const msg = err.response?.data?.msg || 'Login failed';
       setServerError(msg);
+    } finally {
+      setIsLoading(false);
     }
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-60 flex justify-center items-center z-50">
-      <div className="bg-white rounded-lg p-6 w-full max-w-md shadow-lg">
-        <h2 className="text-2xl font-bold mb-4">Login</h2>
-        {serverError && <p className="text-red-600 mb-2">{serverError}</p>}
+    <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex justify-center items-center z-50 p-4">
+      <div className="bg-gradient-to-br from-slate-900 via-purple-900/50 to-slate-900 backdrop-blur-md rounded-2xl p-6 w-full max-w-lg shadow-2xl border border-white/10">
+        {/* Header */}
+        <div className="flex items-center justify-between mb-6">
+          <h2 className="text-2xl font-bold bg-gradient-to-r from-white to-purple-200 bg-clip-text text-transparent">
+            Login
+          </h2>
+          <button
+            onClick={onClose}
+            className="p-2 rounded-lg bg-white/10 text-white hover:bg-white/20 transition-all duration-200 border border-white/20"
+          >
+            <X size={20} />
+          </button>
+        </div>
+
+        {/* Error State */}
+        {serverError && (
+          <div className="mb-6 p-4 bg-red-500/20 border border-red-400/30 rounded-xl flex items-center space-x-3">
+            <AlertCircle size={20} className="text-red-300 flex-shrink-0" />
+            <p className="text-red-200 text-sm">{serverError}</p>
+          </div>
+        )}
+
         <form onSubmit={handleSubmit} className="space-y-4">
+          {/* Email Input */}
           <div>
             <input
               type="email"
               placeholder="Email"
               value={formData.email}
               onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-              className="w-full p-2 border rounded"
+              className="w-full p-4 bg-white/10 backdrop-blur-sm rounded-xl border border-white/20 text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-purple-400/50 transition-all duration-200"
             />
-            {errors.email && <p className="text-red-500 text-sm">{errors.email}</p>}
+            {errors.email && (
+              <p className="text-red-300 text-sm mt-2 flex items-center space-x-1">
+                <AlertCircle size={14} />
+                <span>{errors.email}</span>
+              </p>
+            )}
           </div>
+
+          {/* Password Input */}
           <div>
             <input
               type="password"
               placeholder="Password"
               value={formData.password}
               onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-              className="w-full p-2 border rounded"
+              className="w-full p-4 bg-white/10 backdrop-blur-sm rounded-xl border border-white/20 text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-purple-400/50 transition-all duration-200"
             />
-            {errors.password && <p className="text-red-500 text-sm">{errors.password}</p>}
+            {errors.password && (
+              <p className="text-red-300 text-sm mt-2 flex items-center space-x-1">
+                <AlertCircle size={14} />
+                <span>{errors.password}</span>
+              </p>
+            )}
           </div>
-          <div className="flex justify-end space-x-2">
+
+          {/* Footer Actions */}
+          <div className="flex space-x-3 pt-4">
             <button
-            type="submit"
-            className="w-full py-2 rounded-full bg-primary text-white font-semibold hover:bg-opacity-90 transition-colors"
+              type="button"
+              onClick={onClose}
+              className="flex-1 px-6 py-3 rounded-xl bg-white/10 text-white font-medium hover:bg-white/20 border border-white/20 transition-all duration-200"
             >
-                Login
+              Cancel
             </button>
             <button
-            type="button"
-            className="w-full py-2 rounded-full bg-secondary text-white font-semibold hover:bg-opacity-90 transition-colors"
-            onClick={onClose}
+              type="submit"
+              disabled={isLoading}
+              className="flex-1 px-6 py-3 rounded-xl bg-gradient-to-r from-purple-600 to-blue-600 text-white font-medium hover:from-purple-700 hover:to-blue-700 transition-all duration-200 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2"
             >
-                Close
+              {isLoading ? (
+                <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+              ) : (
+                <>
+                  <LogIn size={16} />
+                  <span>Login</span>
+                </>
+              )}
             </button>
           </div>
         </form>

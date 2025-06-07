@@ -47,6 +47,8 @@ export const OpenAIProvider = ({ children }) => {
         setSystemInformation(res.data);
       } catch (err) {
         console.error('Failed to fetch system information:', err);
+
+        setSystemInformation(undefined);
       }
     };
 

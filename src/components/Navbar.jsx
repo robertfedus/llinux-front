@@ -2,6 +2,7 @@ import React from 'react';
 import { useOpenAI } from '../context/OpenAIContext';
 import openaiLogo from '../assets/openai_logo.png';
 import deepseekLogo from '../assets/deepseek_logo.png';
+import { Bot } from 'lucide-react';
 
 const modelOptions = [
   { name: 'GPT-4.1', value: 'gpt-4.1', logo: openaiLogo },
@@ -12,7 +13,16 @@ const modelOptions = [
   { name: 'DeepSeek-R1', value: 'deepseek-reasoner', logo: deepseekLogo }
 ];
 
-const Navbar = ({ onToggleSidebar, onOpenRegister, onOpenLogin, onOpenConnectionCode, onToggleAPIKeys, onToggleModelSelection, token, onLogout }) => {
+const Navbar = ({ 
+  onToggleSidebar, 
+  onOpenRegister, 
+  onOpenLogin, 
+  onOpenConnectionCode, 
+  onToggleAPIKeys, 
+  onToggleModelSelection, 
+  token, 
+  onLogout 
+}) => {
   const isAuth = !!token;
   const { selectedModel, systemInformation } = useOpenAI();
   
@@ -28,11 +38,9 @@ const Navbar = ({ onToggleSidebar, onOpenRegister, onOpenLogin, onOpenConnection
   const cpuVal = resources.cpu || '';
   const memoryVal = resources.memory || '';
   const diskVal = resources.disk || '';
-  const gpuVal = resources.gpu || '';
 
   // Parse numerical values if available
   const cpuPercent = cpuVal ? parseFloat(cpuVal) : 0;
-  const gpuPercent = gpuVal ? parseFloat(gpuVal) : 0;
   let memPercent = 0;
   if (memoryVal.includes('/')) {
     const [memUsed, memTotal] = memoryVal.split('/').map(x => parseFloat(x));
@@ -44,124 +52,187 @@ const Navbar = ({ onToggleSidebar, onOpenRegister, onOpenLogin, onOpenConnection
     diskPercent = diskTotal ? (diskUsed / diskTotal) * 100 : 0;
   }
 
+  // Resource status color based on usage
+  const getResourceColor = (percent) => {
+    if (percent > 80) return 'text-red-300';
+    if (percent > 60) return 'text-yellow-300';
+    return 'text-green-300';
+  };
+
+  // Format percentage to ensure consistent width
+  const formatPercent = (percent) => {
+    if (percent >= 100) return '100%';
+
+    return `${percent.toFixed(1)}%`;
+  };
+
   return (
-    <nav className="bg-primary px-6 py-4 shadow-md">
-      <div className="flex justify-between items-center">
-        <div className="flex items-center">
-          <h1 className="ml-3 text-xl font-bold text-white">Llinux</h1>
+    <nav className="bg-gradient-to-r from-slate-900 via-purple-900 to-slate-900 backdrop-blur-md border-b border-white/10 shadow-2xl">
+      <div className="max-w-7xl mx-auto px-6 py-4">
+        <div className="flex justify-between items-center">
+          {/* Left Section - Brand & Model */}
+          <div className="flex items-center space-x-6">
+            {/* Brand */}
+            <div className="flex items-center space-x-2">
+              <div className="w-8 h-8 bg-gradient-to-br from-purple-500 to-blue-600 rounded-lg flex items-center justify-center">
+                <span className="text-white font-bold text-lg"><Bot size={20} className="text-white" /></span>
+              </div>
+              <h1 className="text-2xl font-bold bg-gradient-to-r from-white to-purple-200 bg-clip-text text-transparent">
+                <a href="#">LLinux</a>
+              </h1>
+            </div>
 
-          {/* Model Display - Only show when authenticated */}
-          {isAuth && currentModel && (
-            <div className="ml-6 flex items-center gap-2 px-3 py-1 bg-white bg-opacity-20 rounded-full">
-              <img
-                src={modelLogo}
-                alt={`${modelName} logo`}
-                className="h-5 max-w-[60px] object-contain"
-              />
-              <span className="text-white text-sm font-medium">{modelName}</span>
-            </div>
-          )}
-        </div>
-
-        {/* System Resources Display */}
-        {isAuth && systemInformation?.system_resources && (
-          <div className="flex items-center space-x-4 text-white text-xs">
-            <span className="font-mono">
-              {hostname}
-              {uptime && ` is up for: ${uptime}`}
-            </span>
-            <div className="flex items-center space-x-1">
-              <span>CPU</span>
-              <progress
-                value={cpuPercent}
-                max="100"
-                className="w-12 h-1 accent-primary"
-              />
-              <span>{cpuVal ? `${cpuPercent.toFixed(1)}%` : '-'}</span>
-            </div>
-            <div className="flex items-center space-x-1">
-              <span>Mem</span>
-              <progress
-                value={memPercent}
-                max="100"
-                className="w-12 h-1 accent-primary"
-              />
-              <span>{memoryVal ? `${memPercent.toFixed(1)}%` : '-'}</span>
-            </div>
-            <div className="flex items-center space-x-1">
-              <span>Disk</span>
-              <progress
-                value={diskPercent}
-                max="100"
-                className="w-12 h-1 accent-primary"
-              />
-              <span>{diskVal ? `${diskPercent.toFixed(1)}%` : '-'}</span>
-            </div>
-            <div className="flex items-center space-x-1">
-              <span>GPU</span>
-              <progress
-                value={gpuPercent}
-                max="100"
-                className="w-12 h-1 accent-primary"
-              />
-              <span>{gpuVal ? `${gpuPercent.toFixed(1)}%` : '-'}</span>
-            </div>
+            {/* Model Selection Display */}
+            {isAuth && currentModel && (
+              <div onClick={onToggleModelSelection} className="cursor-pointer hidden md:flex items-center gap-3 px-4 py-2 bg-white/10 backdrop-blur-sm rounded-xl border border-white/20 hover:bg-white/15 transition-all duration-200">
+                <img
+                  src={modelLogo}
+                  alt={`${modelName} logo`}
+                  className="h-6 max-w-[70px] object-contain drop-shadow-sm"
+                />
+                <div className="flex flex-col">
+                  <span className="text-white text-sm font-semibold">{modelName}</span>
+                  <span className="text-purple-200 text-xs opacity-75">Active Model</span>
+                </div>
+              </div>
+            )}
           </div>
-        )}
 
-        <div className="flex space-x-4">
-          {!isAuth ? (
-            <>
-              <button
-                onClick={onOpenRegister}
-                className="px-3 py-1 rounded-full bg-secondary text-white hover:bg-opacity-90 transition-colors"
-              >
-                Register
-              </button>
-              <button
-                onClick={onOpenLogin}
-                className="px-3 py-1 rounded-full bg-accent1 text-white hover:bg-opacity-90 transition-colors"
-              >
-                Login
-              </button>
-            </>
-          ) : (
-            <>
-              <button
-                onClick={onOpenConnectionCode}
-                className="px-3 py-1 rounded-full bg-secondary text-white hover:bg-opacity-90 transition-colors"
-              >
-                Connect Device
-              </button>
-              <button
-                onClick={onToggleSidebar}
-                className="px-3 py-1 rounded-full bg-secondary text-white hover:bg-opacity-90 transition-colors"
-              >
-                Command Panel
-              </button>
-              <button
-                onClick={onToggleModelSelection}
-                className="px-3 py-1 rounded-full bg-secondary text-white hover:bg-opacity-90 transition-colors"
-              >
-                Select Model
-              </button>
-              <button
-                onClick={onToggleAPIKeys}
-                className="px-3 py-1 rounded-full bg-secondary text-white hover:bg-opacity-90 transition-colors"
-              >
-                API Keys
-              </button>
-              <button 
-                onClick={onLogout} 
-                className="px-3 py-1 rounded-full bg-accent1 text-white hover:bg-opacity-90 transition-colors"
-              >
-                Log Out
-              </button>
-              <button className="px-3 py-1 rounded-full bg-accent1 text-white hover:bg-opacity-90 transition-colors">
-                Settings
-              </button>
-            </>
+          {/* Center Section - System Resources */}
+          {isAuth && systemInformation?.system_resources && (
+            <div className="hidden lg:flex items-center space-x-4 bg-black/20 backdrop-blur-sm rounded-xl px-4 py-2 border border-white/10">
+              {/* Hostname & Uptime - More compact */}
+              <div className="text-center min-w-0 flex-shrink-0">
+                <div className="text-white text-xs font-medium truncate">{hostname || 'Server'}</div>
+                {uptime && (
+                  <div className="text-purple-200 text-xs opacity-75 truncate">up {uptime}</div>
+                )}
+              </div>
+              
+              {/* Resource Meters - Fixed width containers */}
+              <div className="flex items-center space-x-3">
+                {/* CPU */}
+                <div className="flex flex-col items-center space-y-1 w-14">
+                  <div className="flex flex-col items-center">
+                    <span className="text-white text-xs font-medium">CPU</span>
+                    <span className={`text-xs font-mono ${getResourceColor(cpuPercent)} w-10 text-center`}>
+                      {cpuVal ? formatPercent(cpuPercent) : '-'}
+                    </span>
+                  </div>
+                  <div className="w-12 h-1 bg-white/20 rounded-full overflow-hidden">
+                    <div 
+                      className={`h-full rounded-full transition-all duration-300 ${
+                        cpuPercent > 80 ? 'bg-red-400' : 
+                        cpuPercent > 60 ? 'bg-yellow-400' : 'bg-green-400'
+                      }`}
+                      style={{ width: `${Math.min(cpuPercent, 100)}%` }}
+                    />
+                  </div>
+                </div>
+
+                {/* Memory */}
+                <div className="flex flex-col items-center space-y-1 w-14">
+                  <div className="flex flex-col items-center">
+                    <span className="text-white text-xs font-medium">RAM</span>
+                    <span className={`text-xs font-mono ${getResourceColor(memPercent)} w-10 text-center`}>
+                      {memoryVal ? formatPercent(memPercent) : '-'}
+                    </span>
+                  </div>
+                  <div className="w-12 h-1 bg-white/20 rounded-full overflow-hidden">
+                    <div 
+                      className={`h-full rounded-full transition-all duration-300 ${
+                        memPercent > 80 ? 'bg-red-400' : 
+                        memPercent > 60 ? 'bg-yellow-400' : 'bg-green-400'
+                      }`}
+                      style={{ width: `${Math.min(memPercent, 100)}%` }}
+                    />
+                  </div>
+                </div>
+
+                {/* Disk */}
+                <div className="flex flex-col items-center space-y-1 w-14">
+                  <div className="flex flex-col items-center">
+                    <span className="text-white text-xs font-medium">DISK</span>
+                    <span className={`text-xs font-mono ${getResourceColor(diskPercent)} w-10 text-center`}>
+                      {diskVal ? formatPercent(diskPercent) : '-'}
+                    </span>
+                  </div>
+                  <div className="w-12 h-1 bg-white/20 rounded-full overflow-hidden">
+                    <div 
+                      className={`h-full rounded-full transition-all duration-300 ${
+                        diskPercent > 80 ? 'bg-red-400' : 
+                        diskPercent > 60 ? 'bg-yellow-400' : 'bg-green-400'
+                      }`}
+                      style={{ width: `${Math.min(diskPercent, 100)}%` }}
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
           )}
+
+          {/* Right Section - Action Buttons */}
+          <div className="flex items-center space-x-3">
+            {!isAuth ? (
+              <>
+                <button
+                  onClick={onOpenRegister}
+                  className="px-4 py-2 rounded-lg bg-white/10 text-white font-medium hover:bg-white/20 transition-all duration-200 border border-white/20 hover:border-white/30"
+                >
+                  Register
+                </button>
+                <button
+                  onClick={onOpenLogin}
+                  className="px-4 py-2 rounded-lg bg-gradient-to-r from-purple-600 to-blue-600 text-white font-medium hover:from-purple-700 hover:to-blue-700 transition-all duration-200 shadow-lg hover:shadow-xl"
+                >
+                  Login
+                </button>
+              </>
+            ) : (
+              <>
+                {/* Mobile Menu Button - Hidden on larger screens */}
+                <div className="md:hidden">
+                  <button className="p-2 rounded-lg bg-white/10 text-white hover:bg-white/20 transition-all duration-200">
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                    </svg>
+                  </button>
+                </div>
+
+                {/* Desktop Buttons */}
+                <div className="hidden md:flex items-center space-x-2">
+                  <button
+                    onClick={onOpenConnectionCode}
+                    className="px-3 py-2 rounded-lg bg-white/10 text-white text-sm font-medium hover:bg-white/20 transition-all duration-200 border border-white/20"
+                  >
+                    Connect
+                  </button>
+                  <button
+                    onClick={onToggleSidebar}
+                    className="px-3 py-2 rounded-lg bg-white/10 text-white text-sm font-medium hover:bg-white/20 transition-all duration-200 border border-white/20"
+                  >
+                    Commands
+                  </button>
+                  <button
+                    onClick={onToggleAPIKeys}
+                    className="px-3 py-2 rounded-lg bg-white/10 text-white text-sm font-medium hover:bg-white/20 transition-all duration-200 border border-white/20"
+                  >
+                    API Keys
+                  </button>
+                  
+                  {/* Divider */}
+                  <div className="w-px h-6 bg-white/20 mx-2"></div>
+                  
+                  <button 
+                    onClick={onLogout} 
+                    className="px-3 py-2 rounded-lg bg-gradient-to-r from-red-600 to-pink-600 text-white text-sm font-medium hover:from-red-700 hover:to-pink-700 transition-all duration-200 shadow-lg hover:shadow-xl"
+                  >
+                    Logout
+                  </button>
+                </div>
+              </>
+            )}
+          </div>
         </div>
       </div>
     </nav>
