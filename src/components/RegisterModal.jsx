@@ -44,6 +44,8 @@ const RegisterModal = ({ onClose, onSuccess }) => {
       localStorage.setItem('token', res.data.token);
       onSuccess(res.data.user);
       onClose();
+
+      window.location.reload();
     } catch (err) {
       const msg = err.response?.data?.msg || 'Registration failed';
       setServerError(msg);

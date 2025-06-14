@@ -34,6 +34,8 @@ const LoginModal = ({ onClose, onSuccess }) => {
       localStorage.setItem('token', res.data.token);
       onSuccess(res.data.user);
       onClose();
+
+      window.location.reload();
     } catch (err) {
       const msg = err.response?.data?.msg || 'Login failed';
       setServerError(msg);
