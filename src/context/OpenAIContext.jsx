@@ -53,7 +53,7 @@ export const OpenAIProvider = ({ children }) => {
   }, []);
 
   const updateOpenAIClient = (model, chatgptKey, deepseekKey) => {
-    if (model.startsWith('gpt-') && chatgptKey) {
+    if ((model.startsWith('gpt-') || model.startsWith('o')) && chatgptKey) {
       setOpenai(new OpenAI({
         apiKey: chatgptKey,
         dangerouslyAllowBrowser: true
