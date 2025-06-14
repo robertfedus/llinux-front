@@ -58,7 +58,7 @@ export const OpenAIProvider = ({ children }) => {
         apiKey: chatgptKey,
         dangerouslyAllowBrowser: true
       }));
-    } else if (model === 'deepseek-chat' && deepseekKey) {
+    } else if (model.startsWith('deepseek-') && deepseekKey) {
       setOpenai(new OpenAI({
         baseURL: 'https://api.deepseek.com',
         apiKey: deepseekKey,
@@ -69,7 +69,7 @@ export const OpenAIProvider = ({ children }) => {
 
   const generateChatCompletion = async (messages, options = {}) => {
     const { signal } = options;
-    let instructionString = "You are Llinux, an expert Linux AI Assistant designed to help users with Linux-related questions, problems, and tasks. Your primary goal is to provide accurate, helpful information and clear terminal commands. Only give one solution, and provide the commands in order.";
+    let instructionString = "You are LLinux, an expert Linux AI Assistant designed to help users with Linux-related questions, problems, and tasks. Your primary goal is to provide accurate, helpful information and clear terminal commands. Only give one solution, and provide the commands in order.";
     if (systemInformation.system_information) {
       instructionString += `Some useful information about the system you are assisting:
           Hostname: ${systemInformation.system_information.hostname},
