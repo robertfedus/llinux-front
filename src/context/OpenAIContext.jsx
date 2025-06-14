@@ -22,11 +22,11 @@ export const OpenAIProvider = ({ children }) => {
 
         setChatGPTKey(res.data.chatgpt_key || '');
         setDeepSeekKey(res.data.deepseek_key || '');
-
-        updateOpenAIClient(res.data.chatgpt_key, res.data.deepseek_key);
       } catch (err) {
         console.error(err);
       }
+
+      updateOpenAIClient(res.data.chatgpt_key, res.data.deepseek_key);
     };
     fetchKeys();
 
