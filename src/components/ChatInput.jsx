@@ -2,11 +2,7 @@ import React, { useState } from 'react';
 
 function ChatInput({
   onSendMessage,
-  onReason,
-  onSearch,
   onStop,
-  isReasoning,
-  isSearching,
   isLoading
 }) {
   const [message, setMessage] = useState('');
@@ -27,7 +23,6 @@ function ChatInput({
   return (
     <div className="border-t border-white/10 bg-gradient-to-r from-slate-900 via-purple-900 to-slate-900 backdrop-blur-md shadow-2xl">
       <div className="max-w-4xl mx-auto p-6">
-        {/* Action Buttons Row */}
         <div className="flex justify-center items-center space-x-3 mb-4">
           {isLoading && (
             <button
@@ -47,7 +42,6 @@ function ChatInput({
           )}
         </div>
 
-        {/* Message Input */}
         <div className="relative">
           <div className="flex items-start space-x-3">
             <div className="flex-1 relative">
@@ -65,7 +59,6 @@ function ChatInput({
                 }}
               />
               
-              {/* Character count indicator */}
               {message.length > 500 && (
                 <div className="absolute bottom-2 right-4 text-xs text-purple-200/75">
                   {message.length}
@@ -101,7 +94,6 @@ function ChatInput({
           </div>
         </div>
 
-        {/* Quick Actions */}
         <div className="flex items-center justify-between mt-3 text-xs text-purple-200/75">
           <div className="flex items-center space-x-4">
             <span>Press Enter to send</span>

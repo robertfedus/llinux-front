@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Copy, X, RefreshCw, Clock, CheckCircle, AlertCircle } from 'lucide-react';
+import { API_URL } from "./../config";
 
 const ConnectionCodeModal = ({ onClose }) => {
-  console.log("hello!");
   const [code, setCode] = useState('');
   const [expiresAt, setExpiresAt] = useState(null);
   const [remaining, setRemaining] = useState(0);
@@ -15,7 +15,7 @@ const ConnectionCodeModal = ({ onClose }) => {
     setIsLoading(true);
     try {
       const res = await axios.get(
-        'http://localhost:3000/api/device/connection-code',
+        `${API_URL}/api/device/connection-code`,
         {
           headers: {
             'x-auth-token': localStorage.getItem('token')
@@ -36,7 +36,6 @@ const ConnectionCodeModal = ({ onClose }) => {
     fetchCode();
   }, []);
 
-  // Timer effect
   useEffect(() => {
     if (!expiresAt) return;
     const timerId = setInterval(() => {
@@ -77,7 +76,6 @@ const ConnectionCodeModal = ({ onClose }) => {
   return (
     <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex justify-center items-center z-50 p-4">
       <div className="bg-gradient-to-br from-slate-900 via-purple-900/50 to-slate-900 backdrop-blur-md rounded-2xl p-6 w-full max-w-lg shadow-2xl border border-white/10">
-        {/* Header */}
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-2xl font-bold bg-gradient-to-r from-white to-purple-200 bg-clip-text text-transparent">
             Device Connection Code
@@ -90,14 +88,12 @@ const ConnectionCodeModal = ({ onClose }) => {
           </button>
         </div>
 
-        {/* Instructions */}
         <div className="mb-6">
           <p className="text-white/80 text-sm leading-relaxed">
             You have <span className="font-semibold text-white">3 minutes</span> to paste this code into the Llinux Client Application.
           </p>
         </div>
 
-        {/* Error State */}
         {error && (
           <div className="mb-6 p-4 bg-red-500/20 border border-red-400/30 rounded-xl flex items-center space-x-3">
             <AlertCircle size={20} className="text-red-300 flex-shrink-0" />
@@ -105,7 +101,6 @@ const ConnectionCodeModal = ({ onClose }) => {
           </div>
         )}
 
-        {/* Loading State */}
         {isLoading && !error && (
           <div className="mb-6 p-8 bg-white/10 rounded-xl border border-white/20 flex items-center justify-center">
             <div className="flex items-center space-x-3">
@@ -115,7 +110,6 @@ const ConnectionCodeModal = ({ onClose }) => {
           </div>
         )}
 
-        {/* Code Display */}
         {!error && !isLoading && code && (
           <>
             <div
@@ -134,14 +128,12 @@ const ConnectionCodeModal = ({ onClose }) => {
               </div>
             </div>
 
-            {/* Copy Feedback */}
             {copied && (
               <div className="mb-4 p-2 bg-green-500/20 border border-green-400/30 rounded-lg">
                 <p className="text-green-200 text-sm text-center">Code copied to clipboard!</p>
               </div>
             )}
 
-            {/* Timer */}
             {remaining > 0 && (
               <div className="mb-6 flex items-center justify-center space-x-2 p-3 bg-black/20 rounded-xl border border-white/10">
                 <Clock size={16} className={getTimerColor()} />
@@ -154,7 +146,6 @@ const ConnectionCodeModal = ({ onClose }) => {
           </>
         )}
 
-        {/* Footer Actions */}
         <div className="flex justify-end space-x-3">
           <button
             onClick={fetchCode}

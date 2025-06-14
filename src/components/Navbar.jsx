@@ -1,4 +1,3 @@
-import React from 'react';
 import { useOpenAI } from '../context/OpenAIContext';
 import openaiLogo from '../assets/openai_logo.png';
 import deepseekLogo from '../assets/deepseek_logo.png';
@@ -26,12 +25,10 @@ const Navbar = ({
   const isAuth = !!token;
   const { selectedModel, systemInformation } = useOpenAI();
   
-  // Find the current model info
   const currentModel = modelOptions.find(model => model.value === selectedModel);
   const modelName = currentModel ? currentModel.name : 'Unknown Model';
   const modelLogo = currentModel ? currentModel.logo : null;
 
-  // Safe access to system resources
   const resources = systemInformation?.system_resources || {};
   const hostname = resources.hostname || '';
   const uptime = resources.uptime || '';
@@ -39,7 +36,6 @@ const Navbar = ({
   const memoryVal = resources.memory || '';
   const diskVal = resources.disk || '';
 
-  // Parse numerical values if available
   const cpuPercent = cpuVal ? parseFloat(cpuVal) : 0;
   let memPercent = 0;
   if (memoryVal.includes('/')) {
@@ -52,14 +48,12 @@ const Navbar = ({
     diskPercent = diskTotal ? (diskUsed / diskTotal) * 100 : 0;
   }
 
-  // Resource status color based on usage
   const getResourceColor = (percent) => {
     if (percent > 80) return 'text-red-300';
     if (percent > 60) return 'text-yellow-300';
     return 'text-green-300';
   };
 
-  // Format percentage to ensure consistent width
   const formatPercent = (percent) => {
     if (percent >= 100) return '100%';
 
@@ -70,9 +64,7 @@ const Navbar = ({
     <nav className="bg-gradient-to-r from-slate-900 via-purple-900 to-slate-900 backdrop-blur-md border-b border-white/10 shadow-2xl">
       <div className="max-w-7xl mx-auto px-6 py-4">
         <div className="flex justify-between items-center">
-          {/* Left Section - Brand & Model */}
           <div className="flex items-center space-x-6">
-            {/* Brand */}
             <div className="flex items-center space-x-2">
               <div className="w-8 h-8 bg-gradient-to-br from-purple-500 to-blue-600 rounded-lg flex items-center justify-center">
                 <span className="text-white font-bold text-lg"><Bot size={20} className="text-white" /></span>
@@ -82,7 +74,6 @@ const Navbar = ({
               </h1>
             </div>
 
-            {/* Model Selection Display */}
             {isAuth && currentModel && (
               <div onClick={onToggleModelSelection} className="cursor-pointer hidden md:flex items-center gap-3 px-4 py-2 bg-white/10 backdrop-blur-sm rounded-xl border border-white/20 hover:bg-white/15 transition-all duration-200">
                 <img
@@ -98,10 +89,8 @@ const Navbar = ({
             )}
           </div>
 
-          {/* Center Section - System Resources */}
           {isAuth && systemInformation?.system_resources && (
             <div className="hidden lg:flex items-center space-x-4 bg-black/20 backdrop-blur-sm rounded-xl px-4 py-2 border border-white/10">
-              {/* Hostname & Uptime - More compact */}
               <div className="text-center min-w-0 flex-shrink-0">
                 <div className="text-white text-xs font-medium truncate">{hostname || 'Server'}</div>
                 {uptime && (
@@ -109,9 +98,7 @@ const Navbar = ({
                 )}
               </div>
               
-              {/* Resource Meters - Fixed width containers */}
               <div className="flex items-center space-x-3">
-                {/* CPU */}
                 <div className="flex flex-col items-center space-y-1 w-14">
                   <div className="flex flex-col items-center">
                     <span className="text-white text-xs font-medium">CPU</span>
@@ -130,7 +117,6 @@ const Navbar = ({
                   </div>
                 </div>
 
-                {/* Memory */}
                 <div className="flex flex-col items-center space-y-1 w-14">
                   <div className="flex flex-col items-center">
                     <span className="text-white text-xs font-medium">RAM</span>
@@ -149,7 +135,6 @@ const Navbar = ({
                   </div>
                 </div>
 
-                {/* Disk */}
                 <div className="flex flex-col items-center space-y-1 w-14">
                   <div className="flex flex-col items-center">
                     <span className="text-white text-xs font-medium">DISK</span>
@@ -171,7 +156,6 @@ const Navbar = ({
             </div>
           )}
 
-          {/* Right Section - Action Buttons */}
           <div className="flex items-center space-x-3">
             {!isAuth ? (
               <>
@@ -190,7 +174,6 @@ const Navbar = ({
               </>
             ) : (
               <>
-                {/* Mobile Menu Button - Hidden on larger screens */}
                 <div className="md:hidden">
                   <button className="p-2 rounded-lg bg-white/10 text-white hover:bg-white/20 transition-all duration-200">
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -199,7 +182,6 @@ const Navbar = ({
                   </button>
                 </div>
 
-                {/* Desktop Buttons */}
                 <div className="hidden md:flex items-center space-x-2">
                   <button
                     onClick={onOpenConnectionCode}
@@ -220,7 +202,6 @@ const Navbar = ({
                     API Keys
                   </button>
                   
-                  {/* Divider */}
                   <div className="w-px h-6 bg-white/20 mx-2"></div>
                   
                   <button 

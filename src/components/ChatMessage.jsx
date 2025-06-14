@@ -130,7 +130,6 @@ const ChatMessage = ({ message, handleAddCommandFromMessage }) => {
 
   return (
     <div className={`mb-6 p-5 rounded-xl max-w-4xl transition-all duration-300 hover:shadow-xl ${getMessageStyles()}`}>
-      {/* Message Header */}
       <div className="flex items-center space-x-3 mb-3">
         <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-white/10 backdrop-blur-sm">
           {getMessageIcon()}
@@ -153,13 +152,11 @@ const ChatMessage = ({ message, handleAddCommandFromMessage }) => {
         </div>
       </div>
 
-      {/* Message Content */}
       <div className={`prose prose-invert max-w-none ${
         isSystem ? 'text-center italic' : ''
       }`}>
         <ReactMarkdown
           components={{
-            // Paragraphs
             p: ({ children }) => (
               <p className={`mb-3 leading-relaxed ${
                 isUser ? 'text-white/95' : 
@@ -170,7 +167,6 @@ const ChatMessage = ({ message, handleAddCommandFromMessage }) => {
               </p>
             ),
             
-            // Headers
             h1: ({ children }) => (
               <h1 className="text-xl font-bold mb-3 text-white border-b border-white/20 pb-2">
                 {children}
@@ -187,7 +183,6 @@ const ChatMessage = ({ message, handleAddCommandFromMessage }) => {
               </h3>
             ),
 
-            // Lists
             ul: ({ children }) => (
               <ul className="list-disc list-inside mb-3 space-y-1 text-white/90">
                 {children}
@@ -199,7 +194,6 @@ const ChatMessage = ({ message, handleAddCommandFromMessage }) => {
               </ol>
             ),
 
-            // Links
             a: ({ href, children }) => (
               <a 
                 href={href} 
@@ -211,14 +205,12 @@ const ChatMessage = ({ message, handleAddCommandFromMessage }) => {
               </a>
             ),
 
-            // Blockquotes
             blockquote: ({ children }) => (
               <blockquote className="border-l-4 border-purple-400/50 pl-4 py-2 bg-white/5 rounded-r-lg mb-3 italic text-white/80">
                 {children}
               </blockquote>
             ),
 
-            // Code blocks and inline code
             code({ node, inline, className, children, ...props }) {
               const match = /language-(\w+)/.exec(className || '');
               const codeString = String(children).replace(/\n$/, '').trim();
@@ -227,7 +219,6 @@ const ChatMessage = ({ message, handleAddCommandFromMessage }) => {
               if (!inline && match) {
                 return (
                   <div className="relative group mb-4 mt-4">
-                    {/* Code block header */}
                     <div className="flex items-center justify-between bg-slate-800/80 backdrop-blur-sm px-4 py-2 rounded-t-lg border-b border-white/10">
                       <div className="flex items-center space-x-2">
                         <div className="flex space-x-1">
@@ -284,8 +275,6 @@ const ChatMessage = ({ message, handleAddCommandFromMessage }) => {
                   </div>
                 );
               }
-
-              // Inline code
               return (
                 <code 
                   className="px-2 py-1 bg-white/20 backdrop-blur-sm rounded text-sm font-mono text-purple-200 border border-white/20" 

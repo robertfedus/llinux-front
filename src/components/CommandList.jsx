@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { GripVertical, Copy, Trash2, Check, HelpCircle, Loader2 } from 'lucide-react';
 import { useOpenAI } from '../context/OpenAIContext';
 
@@ -66,7 +66,6 @@ function CommandList({ commands, onCommandsChange }) {
   const getCommandExplanation = async (command) => {
     if (!command.trim()) return;
 
-    // Cancel any existing request
     if (abortControllerRef.current) {
       abortControllerRef.current.abort();
     }
@@ -107,16 +106,13 @@ function CommandList({ commands, onCommandsChange }) {
   };
 
   const handleMouseEnter = (e, index, command) => {
-    // Clear any existing timeout
     if (hoverTimeoutRef.current) {
       clearTimeout(hoverTimeoutRef.current);
     }
 
-    // Update cursor position
     setTooltipPosition({ x: e.clientX, y: e.clientY });
     setHoveredIndex(index);
 
-    // Set timeout for 1 second
     hoverTimeoutRef.current = setTimeout(() => {
       setShowTooltip(true);
       getCommandExplanation(command);
@@ -124,18 +120,15 @@ function CommandList({ commands, onCommandsChange }) {
   };
 
   const handleMouseLeave = () => {
-    // Clear timeout
     if (hoverTimeoutRef.current) {
       clearTimeout(hoverTimeoutRef.current);
       hoverTimeoutRef.current = null;
     }
 
-    // Cancel any ongoing request
     if (abortControllerRef.current) {
       abortControllerRef.current.abort();
     }
 
-    // Hide tooltip
     setShowTooltip(false);
     setHoveredIndex(null);
     setExplanation('');
@@ -148,7 +141,6 @@ function CommandList({ commands, onCommandsChange }) {
     }
   };
 
-  // Cleanup on unmount
   useEffect(() => {
     return () => {
       if (hoverTimeoutRef.current) {
@@ -241,7 +233,6 @@ function CommandList({ commands, onCommandsChange }) {
         </div>
       </div>
 
-      {/* AI Explanation Tooltip */}
       {showTooltip && (
         <div
           className="fixed z-50 max-w-sm p-3 bg-black/90 backdrop-blur-sm border border-white/20 rounded-lg shadow-2xl pointer-events-none"
@@ -271,7 +262,6 @@ function CommandList({ commands, onCommandsChange }) {
             )}
           </div>
           
-          {/* Tooltip Arrow */}
           <div className="absolute top-full left-4 w-2 h-2 bg-black/90 border-r border-b border-white/20 transform rotate-45 translate-y-[-1px]"></div>
         </div>
       )}

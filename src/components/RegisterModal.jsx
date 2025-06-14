@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import axios from 'axios';
 import { X, AlertCircle, UserPlus } from 'lucide-react';
+import { API_URL } from "./../config";
 
 const RegisterModal = ({ onClose, onSuccess }) => {
   const [formData, setFormData] = useState({
@@ -39,7 +40,7 @@ const RegisterModal = ({ onClose, onSuccess }) => {
     }
 
     try {
-      const res = await axios.post('http://localhost:3000/api/register', formData);
+      const res = await axios.post(`${API_URL}/api/register`, formData);
       localStorage.setItem('token', res.data.token);
       onSuccess(res.data.user);
       onClose();
@@ -54,7 +55,6 @@ const RegisterModal = ({ onClose, onSuccess }) => {
   return (
     <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex justify-center items-center z-50 p-4">
       <div className="bg-gradient-to-br from-slate-900 via-purple-900/50 to-slate-900 backdrop-blur-md rounded-2xl p-6 w-full max-w-lg shadow-2xl border border-white/10">
-        {/* Header */}
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-2xl font-bold bg-gradient-to-r from-white to-purple-200 bg-clip-text text-transparent">
             Create Account
@@ -67,7 +67,6 @@ const RegisterModal = ({ onClose, onSuccess }) => {
           </button>
         </div>
 
-        {/* Error State */}
         {serverError && (
           <div className="mb-6 p-4 bg-red-500/20 border border-red-400/30 rounded-xl flex items-center space-x-3">
             <AlertCircle size={20} className="text-red-300 flex-shrink-0" />
@@ -76,7 +75,6 @@ const RegisterModal = ({ onClose, onSuccess }) => {
         )}
 
         <form onSubmit={handleSubmit} className="space-y-4">
-          {/* Name Input */}
           <div>
             <input
               type="text"
@@ -93,7 +91,6 @@ const RegisterModal = ({ onClose, onSuccess }) => {
             )}
           </div>
 
-          {/* Email Input */}
           <div>
             <input
               type="email"
@@ -110,7 +107,6 @@ const RegisterModal = ({ onClose, onSuccess }) => {
             )}
           </div>
 
-          {/* Password Input */}
           <div>
             <input
               type="password"
@@ -127,7 +123,6 @@ const RegisterModal = ({ onClose, onSuccess }) => {
             )}
           </div>
 
-          {/* Confirm Password Input */}
           <div>
             <input
               type="password"
@@ -144,7 +139,6 @@ const RegisterModal = ({ onClose, onSuccess }) => {
             )}
           </div>
 
-          {/* Footer Actions */}
           <div className="flex space-x-3 pt-4">
             <button
               type="button"

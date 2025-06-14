@@ -1,4 +1,3 @@
-import React, { useEffect, useState } from 'react';
 import { useOpenAI } from '../context/OpenAIContext';
 import openaiLogo from './../assets/openai_logo.png';
 import deepseekLogo from './../assets/deepseek_logo.png';
@@ -18,14 +17,11 @@ const ModelSelectionModal = ({ onClose }) => {
 
   const handleModelSelect = (model) => {
     setSelectedModel(model);
-    // Optionally close the modal immediately after selection
-    // onClose();
   };
 
   return (
     <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex justify-center items-center z-50 p-4">
       <div className="bg-gradient-to-br from-slate-900 via-purple-900/50 to-slate-900 backdrop-blur-md rounded-2xl p-6 w-full max-w-lg shadow-2xl border border-white/10">
-        {/* Header */}
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-2xl font-bold bg-gradient-to-r from-white to-purple-200 bg-clip-text text-transparent">
             Select a Model
@@ -38,7 +34,6 @@ const ModelSelectionModal = ({ onClose }) => {
           </button>
         </div>
 
-        {/* Model Options */}
         <div className="space-y-3 mb-6">
           {modelOptions.map(({ name, value, logo, description }) => (
             <div key={value} className="space-y-2">
@@ -71,7 +66,6 @@ const ModelSelectionModal = ({ onClose }) => {
           ))}
         </div>
 
-        {/* Footer */}
         <div className="flex justify-end space-x-3">
           <button
             onClick={onClose}

@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import axios from 'axios';
 import CommandList from './CommandList';
 import CommandOutputList from './CommandOutputList';
 import CommandInput from './CommandInput';
 import { MessageSquare, Terminal } from 'lucide-react';
+import { API_URL } from "./../config";
 
 function CommandSidebar({
   commands,
@@ -27,7 +28,7 @@ function CommandSidebar({
     setIsLoading(true);
     try {
       const response = await axios.post(
-        'http://localhost:3000/api/device/send-commands',
+        `${API_URL}/api/device/send-commands`,
         {
           deviceId: '198692543232975',
           commands,
@@ -51,7 +52,6 @@ function CommandSidebar({
 
   return (
     <div className="w-1/2 h-screen flex flex-col overflow-hidden bg-gradient-to-b from-slate-900 via-purple-900/50 to-slate-900 shadow-2xl">
-      {/* Sidebar Header */}
       <div className=" bg-black/20">
         <div className="px-6 py-4 flex items-center">
           <div className="flex items-center space-x-3">
@@ -66,7 +66,6 @@ function CommandSidebar({
         </div>
       </div>
 
-      {/* Main Content */}
       <div className="flex-1 overflow-auto px-6 py-4">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
           <CommandList
@@ -77,7 +76,6 @@ function CommandSidebar({
         </div>
       </div>
 
-      {/* Input Area */}
       <div className="border-t border-white/10 p-6 flex-shrink-0">
         <CommandInput
           newCommand={newCommand}

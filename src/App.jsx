@@ -1,5 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
-import OpenAI from 'openai/index.mjs';
+import { useState, useRef, useEffect } from 'react';
 import Navbar from './components/Navbar';
 import ChatArea from './components/ChatArea';
 import CommandSidebar from './components/CommandSidebar';
@@ -9,14 +8,9 @@ import RegisterModal from './components/RegisterModal';
 import APIKeysModal from './components/APIKeysModal';
 import ConnectionCodeModal from './components/ConnectionCodeModal';
 import ModelSelectionModal from './components/ModelSelectionModal';
-import { v4 as uuidv4 } from 'uuid'; // Added missing import
-
-const generateId = () => uuidv4();
 
 function App() {
   const [messages, setMessages] = useState([]);
-  const [isReasoning, setIsReasoning] = useState(false);
-  const [isSearching, setIsSearching] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [abortController, setAbortController] = useState(null);
   const [showSidebar, setShowSidebar] = useState(false);
@@ -45,7 +39,7 @@ function App() {
     } else {
       localStorage.removeItem('token');
     }
-  }, [messages, token]); // Fixed the dependency array - was missing comma
+  }, [messages, token]);
 
   const handleToggleSidebar = () => {
     setShowSidebar(!showSidebar);
@@ -72,7 +66,6 @@ function App() {
           />
           
           <div className="flex flex-1 overflow-hidden">
-            {/* Sidebar */}
             {showSidebar && (
               <CommandSidebar
                 commands={commands}
@@ -84,14 +77,9 @@ function App() {
               />
             )}
 
-            {/* Main Chat Area */}
             <ChatArea
               messages={messages}
               setMessages={setMessages}
-              isReasoning={isReasoning}
-              setIsReasoning={setIsReasoning}
-              isSearching={isSearching}
-              setIsSearching={setIsSearching}
               isLoading={isLoading}
               setIsLoading={setIsLoading}
               abortController={abortController}

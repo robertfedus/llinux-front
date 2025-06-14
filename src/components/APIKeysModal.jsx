@@ -1,6 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Trash2, X, Eye, EyeOff, Key, AlertCircle, CheckCircle, Loader2 } from 'lucide-react';
+import { API_URL } from "./../config";
 
 const APIKeysModal = ({ onClose }) => {
   const [formData, setFormData] = useState({ chatgpt_key: '', deepseek_key: '' });
@@ -16,7 +17,7 @@ const APIKeysModal = ({ onClose }) => {
       setIsLoading(true);
       try {
         const token = localStorage.getItem('token');
-        const res = await axios.get('http://localhost:3000/api/api-keys', {
+        const res = await axios.get(`${API_URL}/api/api-keys`, {
           headers: { 'x-auth-token': token }
         });
         if (res.data.chatgpt_key || res.data.deepseek_key) {
@@ -43,7 +44,7 @@ const APIKeysModal = ({ onClose }) => {
     setIsSaving(true);
     
     const token = localStorage.getItem('token');
-    const url = 'http://localhost:3000/api/api-keys';
+    const url = `${API_URL}/api/api-keys`;
     const method = existingKeys ? 'put' : 'post';
     
     try {
@@ -63,7 +64,7 @@ const APIKeysModal = ({ onClose }) => {
   const handleDeleteKey = async (key) => {
     const token = localStorage.getItem('token');
     try {
-      await axios.delete(`http://localhost:3000/api/api-keys?${key}=true`, {
+      await axios.delete(`${API_URL}/api/api-keys?${key}=true`, {
         headers: { 'x-auth-token': token }
       });
       setFormData((prev) => ({ ...prev, [key + '_key']: '' }));
@@ -99,7 +100,6 @@ const APIKeysModal = ({ onClose }) => {
           </button>
         </div>
 
-        {/* Loading State */}
         {isLoading && (
           <div className="mb-6 p-8 bg-white/10 rounded-xl border border-white/20 flex items-center justify-center">
             <div className="flex items-center space-x-3">
@@ -109,7 +109,6 @@ const APIKeysModal = ({ onClose }) => {
           </div>
         )}
 
-        {/* Error Message */}
         {error && (
           <div className="mb-4 p-4 bg-red-500/20 border border-red-400/30 rounded-xl flex items-center space-x-3">
             <AlertCircle size={20} className="text-red-300 flex-shrink-0" />
@@ -117,7 +116,6 @@ const APIKeysModal = ({ onClose }) => {
           </div>
         )}
 
-        {/* Success Message */}
         {success && (
           <div className="mb-4 p-4 bg-green-500/20 border border-green-400/30 rounded-xl flex items-center space-x-3">
             <CheckCircle size={20} className="text-green-300 flex-shrink-0" />
@@ -127,7 +125,6 @@ const APIKeysModal = ({ onClose }) => {
 
         {!isLoading && (
           <form onSubmit={handleSubmit} className="space-y-6">
-            {/* ChatGPT API Key */}
             <div className="space-y-2">
               <label className="block text-white/80 text-sm font-medium">
                 ChatGPT API Key
@@ -163,7 +160,6 @@ const APIKeysModal = ({ onClose }) => {
               </div>
             </div>
 
-            {/* DeepSeek API Key */}
             <div className="space-y-2">
               <label className="block text-white/80 text-sm font-medium">
                 DeepSeek API Key
@@ -199,7 +195,6 @@ const APIKeysModal = ({ onClose }) => {
               </div>
             </div>
 
-            {/* Footer Actions */}
             <div className="flex justify-end space-x-3 pt-4">
               <button
                 type="button"

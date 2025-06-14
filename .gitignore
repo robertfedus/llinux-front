@@ -22,3 +22,7 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+test/.venv
+test/__pycache__
+test/.pytest_cache
+test/credentials.json
