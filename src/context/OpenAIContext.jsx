@@ -23,7 +23,7 @@ export const OpenAIProvider = ({ children }) => {
         setChatGPTKey(res.data.chatgpt_key || '');
         setDeepSeekKey(res.data.deepseek_key || '');
 
-        updateOpenAIClient(selectedModel, res.data.chatgpt_key, res.data.deepseek_key);
+        updateOpenAIClient(res.data.chatgpt_key, res.data.deepseek_key);
       } catch (err) {
         console.error(err);
       }
@@ -52,14 +52,14 @@ export const OpenAIProvider = ({ children }) => {
     return () => clearInterval(intervalId); // Cleanup on unmount
   }, []);
 
-  const updateOpenAIClient = (model, chatgptKey, deepseekKey) => {
-    console.log(model);
-    if ((model.startsWith('gpt-') || model.startsWith('o')) && chatgptKey) {
+  const updateOpenAIClient = (chatgptKey, deepseekKey) => {
+    console.log(selectedModel);
+    if ((selectedModel.startsWith('gpt-') || selectedModel.startsWith('o')) && chatgptKey) {
       setOpenai(new OpenAI({
         apiKey: chatgptKey,
         dangerouslyAllowBrowser: true
       }));
-    } else if (model.startsWith('deepseek-') && deepseekKey) {
+    } else if (selectedModel.startsWith('deepseek-') && deepseekKey) {
       setOpenai(new OpenAI({
         baseURL: 'https://api.deepseek.com',
         apiKey: deepseekKey,
