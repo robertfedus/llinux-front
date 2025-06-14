@@ -22,15 +22,24 @@ export const OpenAIProvider = ({ children }) => {
 
         setChatGPTKey(res.data.chatgpt_key || '');
         setDeepSeekKey(res.data.deepseek_key || '');
+
+        updateOpenAIClient(selectedModel, res.data.chatgpt_key, res.data.deepseek_key);
       } catch (err) {
         console.error(err);
       }
 
-      updateOpenAIClient(chatGPTKey, deepSeekKey);
+      
     };
     fetchKeys();
 
+    // updateOpenAIClient(selectedModel, chatGPTKey, deepSeekKey);
   }, []);
+
+  useEffect(() => {
+
+    updateOpenAIClient(selectedModel, chatGPTKey, deepSeekKey);
+
+  }, [selectedModel]);
 
   useEffect(() => {
     const fetchSystemInfo = async () => {
@@ -52,21 +61,32 @@ export const OpenAIProvider = ({ children }) => {
     return () => clearInterval(intervalId); // Cleanup on unmount
   }, []);
 
-  const updateOpenAIClient = (chatgptKey, deepseekKey) => {
-    console.log(selectedModel);
-    if ((selectedModel.startsWith('gpt-') || selectedModel.startsWith('o')) && chatgptKey) {
-      setOpenai(new OpenAI({
-        apiKey: chatgptKey,
-        dangerouslyAllowBrowser: true
-      }));
-    } else if (selectedModel.startsWith('deepseek-') && deepseekKey) {
-      setOpenai(new OpenAI({
-        baseURL: 'https://api.deepseek.com',
-        apiKey: deepseekKey,
-        dangerouslyAllowBrowser: true
-      }));
-
-      console.log(openai);
+  const updateOpenAIClient = (model, chatgptKey, deepseekKey) => {
+    if ((model.startsWith('gpt-') || model.startsWith('o')) && chatgptKey) {
+      if (!openai) {
+        const newClient = new OpenAI({
+          apiKey: chatgptKey,
+          dangerouslyAllowBrowser: true
+        })
+        setOpenai(newClient);
+      } else {
+        openai.baseURL = 'https://api.openai.com/v1';
+        openai.apiKey = chatgptKey;
+      }
+      
+    } else if (model.startsWith('deepseek-') && deepseekKey) {
+        if (!openai) {
+        const newClient = new OpenAI({
+          baseURL: 'https://api.deepseek.com',
+          apiKey: deepseekKey,
+          dangerouslyAllowBrowser: true
+        })
+        setOpenai(newClient);
+      } else {
+        openai.baseURL = 'https://api.deepseek.com';
+        openai.apiKey = deepSeekKey;
+      }
+      
     }
   };
 
@@ -90,6 +110,8 @@ export const OpenAIProvider = ({ children }) => {
           Desktop Environment: ${systemInformation.system_information.desktop_environment},
           Display Server: ${systemInformation.system_information.display_server}`;
     }
+    // console.log(openai);
+    // console.log(selectedModel);
     
     return await openai.chat.completions.create({
       model: selectedModel,
