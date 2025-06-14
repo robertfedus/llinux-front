@@ -26,7 +26,7 @@ export const OpenAIProvider = ({ children }) => {
         console.error(err);
       }
 
-      updateOpenAIClient(res.data.chatgpt_key, res.data.deepseek_key);
+      updateOpenAIClient(chatGPTKey, deepSeekKey);
     };
     fetchKeys();
 
