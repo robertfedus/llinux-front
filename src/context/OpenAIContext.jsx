@@ -30,7 +30,7 @@ export const OpenAIProvider = ({ children }) => {
     };
     fetchKeys();
 
-  }, [selectedModel]);
+  }, []);
 
   useEffect(() => {
     const fetchSystemInfo = async () => {
