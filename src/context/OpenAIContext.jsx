@@ -65,6 +65,8 @@ export const OpenAIProvider = ({ children }) => {
         apiKey: deepseekKey,
         dangerouslyAllowBrowser: true
       }));
+
+      console.log(openai);
     }
   };
 
