@@ -147,7 +147,7 @@ const ChatMessage = ({ message, handleAddCommandFromMessage }) => {
             isSystem ? 'text-blue-300/75' : 
             'text-white/60'
           }`}>
-            {new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+            {/* {new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} */}
           </div>
         </div>
       </div>

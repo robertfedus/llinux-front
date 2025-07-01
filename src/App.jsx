@@ -22,7 +22,6 @@ function App() {
   const [showAPIKeys, setShowAPIKeys] = useState(false);
   const [showModelSelection, setShowModelSelection] = useState(false);
   const [token, setToken] = useState(localStorage.getItem('token') || null);
-
   const messagesEndRef = useRef(null);
 
   const scrollToBottom = () => {
@@ -31,9 +30,7 @@ function App() {
 
   useEffect(() => {
     scrollToBottom();
-
     if (token) {
-
       setShowRegister(false);
       setShowLogin(false);
     } else {
@@ -64,19 +61,22 @@ function App() {
             token={token}
             onLogout={onLogout}
           />
-          
           <div className="flex flex-1 overflow-hidden">
+            {/* Mobile: CommandSidebar takes full width and overlays ChatArea */}
+            {/* Desktop: CommandSidebar takes half width alongside ChatArea */}
             {showSidebar && (
-              <CommandSidebar
-                commands={commands}
-                setCommands={setCommands}
-                commandResults={commandResults}
-                setCommandResults={setCommandResults}
-                isLoading={isLoading}
-                setIsLoading={setIsLoading}
-              />
+              <div className="absolute inset-0 top-16 z-10 md:relative md:inset-auto md:top-auto md:z-auto md:w-1/2">
+                <CommandSidebar
+                  commands={commands}
+                  setCommands={setCommands}
+                  commandResults={commandResults}
+                  setCommandResults={setCommandResults}
+                  isLoading={isLoading}
+                  setIsLoading={setIsLoading}
+                  onClose={() => setShowSidebar(false)}
+                />
+              </div>
             )}
-
             <ChatArea
               messages={messages}
               setMessages={setMessages}
@@ -86,31 +86,27 @@ function App() {
               setAbortController={setAbortController}
               messagesEndRef={messagesEndRef}
               setCommands={setCommands}
-              halfWidth={true ? showSidebar : false}
+              halfWidth={showSidebar}
+              className={showSidebar ? 'hidden md:flex md:w-1/2' : 'w-full'}
             />
           </div>
           {showRegister && (
-        <RegisterModal onClose={() => setShowRegister(false)} onSuccess={setToken} />
-        )}
-        {showLogin && (
-          <LoginModal onClose={() => setShowLogin(false)} onSuccess={setToken} />
-        )}
-
-        {showConnectionCode && (
-          <ConnectionCodeModal onClose={() => setShowConnectionCode(false)} />
-        )}
-
-        {showAPIKeys && (
-          <APIKeysModal onClose={() => setShowAPIKeys(false)} />
-        )}
-
-        {showModelSelection && (
-          <ModelSelectionModal onClose={() => setShowModelSelection(false)} />
-      )}
+            <RegisterModal onClose={() => setShowRegister(false)} onSuccess={setToken} />
+          )}
+          {showLogin && (
+            <LoginModal onClose={() => setShowLogin(false)} onSuccess={setToken} />
+          )}
+          {showConnectionCode && (
+            <ConnectionCodeModal onClose={() => setShowConnectionCode(false)} />
+          )}
+          {showAPIKeys && (
+            <APIKeysModal onClose={() => setShowAPIKeys(false)} />
+          )}
+          {showModelSelection && (
+            <ModelSelectionModal onClose={() => setShowModelSelection(false)} />
+          )}
         </OpenAIProvider>
       </div>
-
-      
     </div>
   );
 }

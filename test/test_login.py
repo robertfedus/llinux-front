@@ -1,5 +1,3 @@
-# test_login.py
-
 import json
 import pytest
 from selenium import webdriver
@@ -19,13 +17,11 @@ def driver():
     drv.quit()
 
 def test_login_sets_token(driver):
-    # load credentials created by test_register
     with open("credentials.json", "r") as f:
         creds = json.load(f)
     email = creds["email"]
     password = creds["password"]
 
-    # --- LOGIN FLOW ---
     driver.get(BASE_URL)
     driver.find_element(By.XPATH, "//button[normalize-space(.)='Login']").click()
     WebDriverWait(driver, 10).until(
@@ -36,7 +32,6 @@ def test_login_sets_token(driver):
     driver.find_element(By.XPATH, "//input[@placeholder='Password']").send_keys(password)
     driver.find_element(By.XPATH, "//button[normalize-space(.)='Enter Account']").click()
 
-    # wait for token in localStorage
     WebDriverWait(driver, 10).until(
         lambda d: d.execute_script("return localStorage.getItem('token')") is not None
     )

@@ -1,5 +1,3 @@
-# test_register.py
-
 import time
 import pytest
 from selenium import webdriver
@@ -12,7 +10,7 @@ BASE_URL = "http://localhost:5173/"
 def generate_unique_email():
     return f"testuser_{int(time.time() * 1000)}@example.com"
 
-@pytest.fixture  # function‐scoped: new browser per test
+@pytest.fixture
 def driver():
     options = webdriver.ChromeOptions()
     options.add_argument("--headless")
@@ -37,13 +35,11 @@ def test_register_sets_token(driver):
     driver.find_element(By.XPATH, "//input[@placeholder='Confirm Password']").send_keys(password)
     driver.find_element(By.XPATH, "//button[normalize-space(.)='Create Account']").click()
 
-    # wait for token to appear...
     WebDriverWait(driver, 10).until(
         lambda d: d.execute_script("return localStorage.getItem('token')") is not None
     )
     token = driver.execute_script("return localStorage.getItem('token')")
     assert token and len(token) > 0, "Expected a non-empty token in localStorage"
 
-    # --- NEW: clear out the token and reload so subsequent tests start fresh ---
     driver.execute_script("localStorage.clear()")
     driver.refresh()

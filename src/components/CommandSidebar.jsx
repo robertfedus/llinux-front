@@ -3,7 +3,7 @@ import axios from 'axios';
 import CommandList from './CommandList';
 import CommandOutputList from './CommandOutputList';
 import CommandInput from './CommandInput';
-import { MessageSquare, Terminal } from 'lucide-react';
+import { MessageSquare, Terminal, X } from 'lucide-react';
 import { API_URL } from "./../config";
 
 function CommandSidebar({
@@ -12,9 +12,11 @@ function CommandSidebar({
   commandResults,
   setCommandResults,
   isLoading,
-  setIsLoading
+  setIsLoading,
+  onClose
 }) {
   const [newCommand, setNewCommand] = useState('');
+  const [isLoadingExecution, setIsLoadingExecution] = useState(false);
 
   const handleAddCommand = () => {
     if (newCommand.trim()) {
@@ -25,7 +27,8 @@ function CommandSidebar({
 
   const handleExecuteCommands = async () => {
     if (commands.length === 0) return;
-    setIsLoading(true);
+
+    setIsLoadingExecution(true);
     try {
       const response = await axios.post(
         `${API_URL}/api/device/send-commands`,
@@ -39,21 +42,22 @@ function CommandSidebar({
           },
         }
       );
-      console.log('Commands executed successfully:', response.data);
+
+      // console.log('Commands executed successfully:', response.data);
       setCommands([]);
       setCommandResults(response.data.results || []);
     } catch (error) {
-      console.error('Error executing commands:', error);
+      // console.error('Error executing commands:', error);
       setCommandResults([{ command: 'Error', output: error.message, success: false }]);
     } finally {
-      setIsLoading(false);
+      setIsLoadingExecution(false);
     }
   };
 
   return (
-    <div className="w-1/2 h-screen flex flex-col overflow-hidden bg-gradient-to-b from-slate-900 via-purple-900/50 to-slate-900 shadow-2xl">
-      <div className=" bg-black/20">
-        <div className="px-6 py-4 flex items-center">
+    <div className="w-full h-screen flex flex-col overflow-hidden bg-gradient-to-b from-slate-900 via-purple-900/50 to-slate-900 shadow-2xl">
+      <div className="bg-black/20">
+        <div className="px-6 py-4 flex items-center justify-between">
           <div className="flex items-center space-x-3">
             <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-blue-600 rounded-xl flex items-center justify-center">
               <Terminal size={20} className="text-white" />
@@ -63,6 +67,16 @@ function CommandSidebar({
               <p className="text-sm text-white/60">Execute commands on your connected device</p>
             </div>
           </div>
+          
+          {/* Close button for mobile */}
+          {onClose && (
+            <button
+              onClick={onClose}
+              className="md:hidden w-8 h-8 bg-white/10 hover:bg-white/20 rounded-lg flex items-center justify-center transition-colors"
+            >
+              <X size={16} className="text-white" />
+            </button>
+          )}
         </div>
       </div>
 
@@ -83,7 +97,7 @@ function CommandSidebar({
           handleAddCommand={handleAddCommand}
           handleExecuteCommands={handleExecuteCommands}
           commands={commands}
-          isLoading={isLoading}
+          isLoading={isLoadingExecution}
         />
       </div>
     </div>

@@ -12,7 +12,8 @@ function ChatArea({
   abortController,
   setAbortController,
   setCommands,
-  halfWidth
+  halfWidth,
+  className
 }) {
   const { generateChatCompletion, systemInformation } = useOpenAI();
   const messagesContainerRef = useRef(null);
@@ -92,7 +93,7 @@ function ChatArea({
   };
 
   return (
-    <div className={`${halfWidth ? 'w-1/2' : 'w-full'} flex flex-col h-full overflow-hidden bg-gradient-to-br from-slate-900 via-purple-900/50 to-slate-900`}>
+    <div className={`${className || (halfWidth ? 'w-full md:w-1/2' : 'w-full')} flex flex-col h-full overflow-hidden bg-gradient-to-br from-slate-900 via-purple-900/50 to-slate-900`}>
       <div className="flex-shrink-0 bg-black/20 backdrop-blur-sm">
         <div className="max-w-4xl mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
